@@ -119,7 +119,7 @@ if __name__ == "__main__":
     
     
     import sys
-    sys.path.append("/data/xqy/ZeroShot/TransCLIP_Optimal/SOTA")
+    sys.path.append("../../SOTA")
     from OptimalTrans_solver.OptimalTrans_auto import *
     for i, dataset_name in enumerate(args.dataset_names):
         features = [features_dict[dataset_name][key]["test_features"].float() for key in features_dict[dataset_name].keys()]

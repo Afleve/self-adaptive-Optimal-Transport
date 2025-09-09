@@ -20,7 +20,7 @@ from models.MUSK.musk_trans import musk_transform
 from warnings import filterwarnings
 filterwarnings("ignore")
 import sys
-sys.path.append("/data/xqy/ZeroShot/TransCLIP_Optimal/SOTA")
+sys.path.append("../../SOTA")
 from OptimalTrans_solver.OptimalTrans_auto import *
 
 
@@ -28,7 +28,7 @@ from OptimalTrans_solver.OptimalTrans_auto import *
 def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', default='nct', help="dataset name - sicap_mil - skincancer - lc_lung - nct - pannuke - WSSS4LUAD", type=str)
-    parser.add_argument('--root_path', default='/data/xqy/ETC/datasets', type=str)
+    parser.add_argument('--root_path', default='/data/datasets', type=str)
     parser.add_argument('--method', default='TransCLIP', type=str,
                         help='')
     parser.add_argument('--model', default='PLIP', type=str, help='')
