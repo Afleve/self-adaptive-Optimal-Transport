@@ -1,4 +1,4 @@
-[![CVPR 2026 Accepted](https://img.shields.io/badge/ICCV-2025%20Accepted-brightgreen)]()
+[![CVPR 2026 Accepted](https://img.shields.io/badge/CVPR-2026%20Accepted-brightgreen)]()
 
 > This repository contains the official implementation of the CVPR 2026 paper:  
 > **"SOTA: Self-adaptive Optimal Transport for Foundation Model Integration in Transductive Zero-Shot Learning"**  
