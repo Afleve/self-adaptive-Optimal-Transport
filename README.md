@@ -9,9 +9,12 @@
 ## 🚀 Installation
 
 Clone the repository and install required packages.
+
+```bash  
 git clone https://github.com/Afleve/self-adaptive-Optimal-Transport.git  
 cd self-adaptive-Optimal-Transport  
 pip install -r requirements.txt
+```
 
 ## 📂 Datasets
 Natural datasets: Refer to TransCLIP.
