@@ -9,9 +9,14 @@
 ## 🚀 Installation
 
 Clone the repository and install required packages.
-For nature datasets, you can refer to TransCLIP.
-For remote sensing datasets, you can refer to RS-TransCLIP.
-For medical pathology datasets, you can refer to Histo-TransCLIP.
+git clone https://github.com/Afleve/self-adaptive-Optimal-Transport.git  
+cd self-adaptive-Optimal-Transport  
+pip install -r requirements.txt
+
+## 📂 Datasets
+Natural datasets: Refer to TransCLIP.
+Remote sensing datasets: Refer to RS-TransCLIP.
+Medical pathology datasets: Refer to Histo-TransCLIP.
 
 ---
 
@@ -22,3 +27,9 @@ For medical pathology datasets, you can refer to Histo-TransCLIP.
 
 
 ```bibtex
+@inproceedings{SOTA2026CVPR,
+  title={SOTA: Self-adaptive Optimal Transport for Foundation Model Integration in Transductive Zero-Shot Learning},
+  author={Zhanxuan Hu, Qiyu Xu, Yu Duan, Yonghang Tai, Huafeng Li},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year={2026}
+}
