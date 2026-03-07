@@ -15,7 +15,9 @@ pip install -r requirements.txt
 
 ## 📂 Datasets
 Natural datasets: Refer to TransCLIP.
+
 Remote sensing datasets: Refer to RS-TransCLIP.
+
 Medical pathology datasets: Refer to Histo-TransCLIP.
 
 ---
