@@ -8,7 +8,10 @@
 
 ## 🚀 Installation
 
-Clone the repository and install required packages
+Clone the repository and install required packages.
+For nature datasets, you can refer to TransCLIP.
+For remote sensing datasets, you can refer to RS-TransCLIP.
+For medical pathology datasets, you can refer to Histo-TransCLIP.
 
 ---
 
