@@ -1,7 +1,7 @@
 [![CVPR 2026 Accepted](https://img.shields.io/badge/CVPR-2026%20Accepted-brightgreen)]()
 
 > This repository contains the official implementation of the CVPR 2026 paper:  
-> **"SOTA: Self-adaptive Optimal Transport for Foundation Model Integration in Transductive Zero-Shot Learning"**  
+> **"SOTA: Self-adaptive Optimal Transport for Zero-Shot Classification with Multiple Foundation Models"**  
 
 ---
 
@@ -33,7 +33,7 @@ Medical pathology datasets: Refer to Histo-TransCLIP.
 
 ```bibtex
 @inproceedings{SOTA2026CVPR,
-  title={SOTA: Self-adaptive Optimal Transport for Foundation Model Integration in Transductive Zero-Shot Learning},
+  title={SOTA: Self-adaptive Optimal Transport for Zero-Shot Classification with Multiple Foundation Models},
   author={Zhanxuan Hu, Qiyu Xu, Yu Duan, Yonghang Tai, Huafeng Li},
   booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
   year={2026}
