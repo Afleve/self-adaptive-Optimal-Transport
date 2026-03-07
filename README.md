@@ -1,3 +1,19 @@
-# SOTA: Self-adaptive Optimal Transport for Foundation Model Integration in Transductive Zero-Shot Learning
+[![CVPR 2026 Accepted](https://img.shields.io/badge/ICCV-2025%20Accepted-brightgreen)]()
 
-under review
+> This repository contains the official implementation of the CVPR 2026 paper:  
+> **"SOTA: Self-adaptive Optimal Transport for Foundation Model Integration in Transductive Zero-Shot Learning"**  
+
+---
+
+
+## 🚀 Installation
+
+Clone the repository and install required packages
+
+---
+
+## 🙏 Acknowledgments
+- Thanks to [@MaxZanella](https://github.com/MaxZanella) for their awesome [TransCLIP](https://github.com/MaxZanella/transduction-for-vlms.git).
+
+
+```bibtex
