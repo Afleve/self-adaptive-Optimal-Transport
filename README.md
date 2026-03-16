@@ -1,4 +1,4 @@
-[![CVPR 2026 Accepted](https://img.shields.io/badge/CVPR-2026%20Accepted-brightgreen)] [Paper(Arxiv)](https://arxiv.org/pdf/2506.13723)
+[![CVPR 2026 Accepted](https://img.shields.io/badge/CVPR-2026%20Accepted-brightgreen)]() [Paper(Arxiv)](https://arxiv.org/pdf/2506.13723)
 
 > This repository contains the official implementation of the CVPR 2026 paper:  
 > **"SOTA: Self-adaptive Optimal Transport for Zero-Shot Classification with Multiple Foundation Models"**  
