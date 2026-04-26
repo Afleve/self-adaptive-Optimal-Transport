@@ -23,6 +23,8 @@ Remote sensing datasets: Refer to RS-TransCLIP.
 
 Medical pathology datasets: Refer to Histo-TransCLIP.
 
+Note: The paper reports on the original dataset. To verify the broader effectiveness of our method, we reshaped some medical pathology and remote sensing datasets, obtaining a training set and a test set in a 7:3 split. The dataset preprocessing and specific datasets can be found at: [OSTB](https://github.com/Afleve/OSTB) .
+
 ---
 
 ## 🙏 Acknowledgments
