@@ -2,8 +2,35 @@ from tqdm import tqdm
 
 import torch
 import torch.nn.functional as F
-
+from torchvision import transforms
 import clip
+
+backbones = {'rn50': 'RN50',
+                 'rn101': 'RN101',
+                 'vit_b16': 'ViT-B/16',
+                 'vit_b32': 'ViT-B/32',
+                 'vit_l14': 'ViT-L/14'}
+
+transform_v3 = transforms.Compose([
+    transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.BILINEAR),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std =[0.229, 0.224, 0.225],
+    ),
+])
+
+transform_v2 = transforms.Compose([
+    transforms.Resize(256, interpolation=transforms.InterpolationMode.BICUBIC),
+    transforms.CenterCrop((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    ),
+])
+
+
 
 
 def cls_acc(output, target, topk=1):
@@ -14,44 +41,7 @@ def cls_acc(output, target, topk=1):
     return acc
 
 
-def clip_classifier(classnames, template, clip_model, reduce='mean', gpt=False, wordnet_dict=None, dataname = None):
-    # if gpt:
-    #     if dataname == "dtd":
-    #         with open(dtd_prompt_json, "r") as f:
-    #             template = json.load(f)
-    #     elif dataname == "ucf101":
-    #         with open(ucf101_prompt_json, "r") as f:
-    #             template = json.load(f)
-    #     elif dataname == "sun397":
-    #         with open(sun397_prompt_json, "r") as f:
-    #             template = json.load(f)
-    #     elif dataname == "eurosat":
-    #         with open(eurosat_prompt_json, "r") as f:
-    #             template = json.load(f)
-    #     elif dataname == "food101":
-    #         with open(food101_prompt_json, "r") as f:
-    #             template = json.load(f)
-    #     elif dataname == "caltech101":
-    #         with open(caltech101_prompt_json, "r") as f:
-    #             template = json.load(f)
-    #     elif dataname == "fgvc":
-    #         with open(fgvc_prompt_json, "r") as f:
-    #             template = json.load(f)
-    #     elif dataname == "stanford_cars":
-    #         with open(stanford_cars_prompt_json, "r") as f:
-    #             template = json.load(f)
-    #     elif dataname == "oxford_pets":
-    #         with open(oxford_pets_prompt_json, "r") as f:
-    #             template = json.load(f)
-    #     elif dataname == "oxford_flowers":
-    #         with open(oxford_flowers_prompt_json, "r") as f:
-    #             template = json.load(f)
-    #     elif dataname == "imagenet":
-    #         with open(imagenet_prompt_json, "r") as f:
-    #             template = json.load(f)
-    #     else:
-    #         raise ValueError(f"Dataset {dataname} not found")
-    # template = ['a photo of a {}.']
+def clip_classifier(classnames, template, clip_model, reduce='mean', gpt=False, wordnet_dict=None):
     with torch.no_grad():
         clip_weights = []
         if wordnet_dict is not None:
@@ -107,26 +97,24 @@ def clip_classifier(classnames, template, clip_model, reduce='mean', gpt=False, 
     return clip_weights
 
 
-
-def get_all_features(cfg, train_loader, val_loader, test_loader, dataset, clip_model, visionLanguageM):
-    clip_prototypes = clip_classifier(dataset.classnames, dataset.template, clip_model, reduce=None, gpt=False, dataname = cfg['dataset'])
-    temp = torch.nn.functional.normalize(clip_prototypes.T, dim=-1)
-    torch.save(temp, f'{cfg["cache_dir"]}/clip_prototypes.pt')
-    test_features, test_labels = pre_load_features(cfg, "test", clip_model, test_loader, visionLanguageM)
+def get_all_features(cfg, train_loader, val_loader, test_loader, dataset, clip_model):
+    clip_prototypes = clip_classifier(dataset.classnames, dataset.template, clip_model, reduce=None)
+    test_features, test_labels = pre_load_features(cfg, "test", clip_model, test_loader)
     shot_features = None
     shot_labels = None
     val_features = None
     val_labels = None
-
-    if cfg['shots'] > 0:
-        shot_features, shot_labels = build_cache_model(cfg, clip_model, train_loader, n_views=0,
-                                                     reduce=None)
-        val_features, val_labels = pre_load_features(cfg, "val", clip_model, val_loader)
+    if cfg['setting'] == 'Inductive':
+        shot_features, shot_labels = build_cache_model(cfg, clip_model, train_loader, n_views=1, reduce=None)
+        if len(shot_labels.shape)==2:
+            shot_labels = shot_labels.argmax(-1)
+        if len(shot_features.shape)==3:
+            shot_features = shot_features.squeeze(0)
+            # val_features, val_labels = pre_load_features(cfg, "val", clip_model, val_loader)
     return shot_features, shot_labels, val_features, val_labels, test_features, test_labels, clip_prototypes
 
 
-
-def build_cache_model(cfg, clip_model, train_loader_cache, n_views=0, reduce=None):
+def build_cache_model(cfg, model, train_loader_cache, n_views=0, reduce=None, modelName='clip'):
     print('... for shot samples from train split:')
 
     if cfg['load_cache'] == False:    
@@ -143,11 +131,16 @@ def build_cache_model(cfg, clip_model, train_loader_cache, n_views=0, reduce=Non
                 train_labels = []
                 for i, (images, target) in enumerate(tqdm(train_loader_cache)):
                     images = images.cuda()
-                    image_features = clip_model.encode_image(images)
-                    train_features.append(image_features)
+                    if modelName == 'clip':
+                        image_features = model.encode_image(images)
+                    elif modelName == 'dinov2':
+                            image_features = model(images).last_hidden_state[:, 0]
+                    elif modelName =='dinov3':
+                        image_features = model(images).pooler_output
+                    train_features.append(image_features.cpu())
                     
                     if augment_idx == 0:
-                        target = target.cuda()
+                        target = target.cpu()
                         cache_values.append(target)
                         
                 cache_keys.append(torch.cat(train_features, dim=0).unsqueeze(0))
@@ -177,7 +170,12 @@ def build_cache_model(cfg, clip_model, train_loader_cache, n_views=0, reduce=Non
 
     return cache_keys, cache_values
 
-def pre_load_features(cfg, split, model, loader, visionLanguageM, n_views=1):
+
+
+
+
+
+def pre_load_features(cfg, split, model, loader, n_views=1, modelName='clip'):
 
     print('... from {} split:'.format(split))
 
@@ -193,12 +191,15 @@ def pre_load_features(cfg, split, model, loader, visionLanguageM, n_views=1):
                         
                         images, target = images.cuda(), target.cuda()
                         
-                        if visionLanguageM == 'clip':
+                        if modelName == 'clip':
                             image_features = model.encode_image(images)
-                        elif visionLanguageM == 'dinov2' or visionLanguageM == 'dinov3' :
-                            image_features = model(images)
+                        elif modelName == 'dinov2':
+                            image_features = model(images).last_hidden_state[:, 0]
+                        elif modelName =='dinov3':
+                            image_features = model(images).pooler_output
                         
                         image_features /= image_features.norm(dim=-1, keepdim=True)
+                        image_features = image_features.cpu()
                         
                         
                         features.append(image_features.cpu())
@@ -225,13 +226,13 @@ def pre_load_features(cfg, split, model, loader, visionLanguageM, n_views=1):
         elif n_views==1:
             features, labels = torch.cat(features), torch.cat(labels)
         
-        torch.save(features, cfg['cache_dir'] + "/" + split + f"_{visionLanguageM}_f.pt")
-        torch.save(labels, cfg['cache_dir'] + "/" + split + f"_{visionLanguageM}_l.pt")
+        torch.save(features, cfg['cache_dir'] + "/" + split + "_f.pt")
+        torch.save(labels, cfg['cache_dir'] + "/" + split + "_l.pt")
    
     else:
         
-        features = torch.load(cfg['cache_dir'] + "/" + split + f"_{visionLanguageM}_f.pt")
-        labels = torch.load(cfg['cache_dir'] + "/" + split + f"_{visionLanguageM}_l.pt")
+        features = torch.load(cfg['cache_dir'] + "/" + split + "_f.pt")
+        labels = torch.load(cfg['cache_dir'] + "/" + split + "_l.pt")
     
     return features, labels
 
